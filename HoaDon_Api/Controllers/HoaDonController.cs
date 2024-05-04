@@ -19,5 +19,16 @@ namespace HoaDon_Api.Controllers
         {
             return Ok(_hoaDonService.ThemHoaDon(request));
         }
+
+        [HttpPut]
+        public IActionResult SuaHoaDon(int HoaDonId,Request_SuaHoaDon request)
+        {
+            return Ok(_hoaDonService.SuaHoaDon(HoaDonId,request));
+        }
+        [HttpDelete]
+        public IActionResult XoaHoaDon(int HoaDonId)
+        {
+            return Ok(_hoaDonService.XoaHoaDon(HoaDonId));
+        }
     }
 }

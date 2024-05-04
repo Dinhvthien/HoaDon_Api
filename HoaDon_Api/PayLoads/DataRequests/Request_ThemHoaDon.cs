@@ -6,7 +6,5 @@
         public string TenHoaDon { get; set; }
         public string GhiChu { get; set; }
         public List<Request_ThemChiTietHoaDon> ChiTietHoaDons { get; set; }
-
-
     }
 }
