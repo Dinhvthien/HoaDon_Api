@@ -16,6 +16,7 @@
         {
             return new ResponseObject<T>(StatusCodes.Status200OK, message, data);
         }
+
         public ResponseObject<T> ResponseError(int status, string message, T data)
         {
             return new ResponseObject<T>(status, message, data);

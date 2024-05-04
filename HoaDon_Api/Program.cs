@@ -15,6 +15,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IHoaDonService, HoaDonService>();
 builder.Services.AddSingleton<HoaDonConverter>();
 builder.Services.AddSingleton<ResponseObject<DataResponseHoaDon>>();
+builder.Services.AddSingleton<ResponseList<DataResponseHoaDon>>();
+
 
 var app = builder.Build();
 

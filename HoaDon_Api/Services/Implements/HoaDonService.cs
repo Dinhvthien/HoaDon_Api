@@ -6,6 +6,9 @@ using HoaDon_Api.PayLoads.DataResponses;
 using HoaDon_Api.PayLoads.Responses;
 using HoaDon_Api.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace HoaDon_Api.Services.Implements
 {
@@ -13,14 +16,16 @@ namespace HoaDon_Api.Services.Implements
     {
         private readonly AppDbContext _context;
         private readonly ResponseObject<DataResponseHoaDon> _responseObject;
+        private readonly ResponseList<DataResponseHoaDon> _responseList;
+
         private readonly HoaDonConverter _hdConverter;
 
-        public HoaDonService(ResponseObject<DataResponseHoaDon> responseObject)
+        public HoaDonService(ResponseObject<DataResponseHoaDon> responseObject, ResponseList<DataResponseHoaDon> responseList)
         {
             _context = new AppDbContext();
             _responseObject = responseObject;
             _hdConverter = new HoaDonConverter();
-
+            _responseList = responseList;
         }
 
         public ResponseObject<DataResponseHoaDon> SuaHoaDon(int HoaDonId, Request_SuaHoaDon request_SuaHoaDon)
@@ -158,6 +163,68 @@ namespace HoaDon_Api.Services.Implements
             _context.hoaDons.Remove(hoaDon);
             _context.SaveChanges();
             return _responseObject.ResponseSuccses("xoa hoa don thanh cong", _hdConverter.EntityToDTO(hoaDon));
+        }
+
+
+        // Loc du lieu
+        public List<ResponseList<DataResponseHoaDon>> LayHoaDon()
+        {
+            List<HoaDon> list = _context.hoaDons.ToList();
+            List<ResponseList<DataResponseHoaDon>> responseObjects = new List<ResponseList<DataResponseHoaDon>>();
+            foreach (var item in list)
+            {
+                var responseObject = _responseList.ResponseSuccses(_hdConverter.EntityToDTO(item));
+                responseObjects.Add(responseObject);
+            }
+            return responseObjects;
+        }
+
+        public List<ResponseList<DataResponseHoaDon>> LayHoaDonTheoNamThang(int year, int month)
+        {
+            List<HoaDon> list = _context.hoaDons.Where(c=>c.ThoiGianTao.Year == year && c.ThoiGianTao.Month == month).ToList();
+            List<ResponseList<DataResponseHoaDon>> responseObjects = new List<ResponseList<DataResponseHoaDon>>();
+            foreach (var item in list)
+            {
+                var responseObject = _responseList.ResponseSuccses(_hdConverter.EntityToDTO(item));
+                responseObjects.Add(responseObject);
+            }
+            return responseObjects;
+        }
+
+        public List<ResponseList<DataResponseHoaDon>> LayHoaDonTheoNgay(DateTime Ngaydau, DateTime ngaykt)
+        {
+            List<HoaDon> list = _context.hoaDons.Where(c => c.ThoiGianTao <= ngaykt && c.ThoiGianTao >= Ngaydau).ToList();
+            List<ResponseList<DataResponseHoaDon>> responseObjects = new List<ResponseList<DataResponseHoaDon>>();
+            foreach (var item in list)
+            {
+                var responseObject = _responseList.ResponseSuccses(_hdConverter.EntityToDTO(item));
+                responseObjects.Add(responseObject);
+            }
+            return responseObjects;
+        }
+
+        public List<ResponseList<DataResponseHoaDon>> LayHoaDonTheoTien(double start, double end)
+        {
+            List<HoaDon> list = _context.hoaDons.Where(c => c.ThanhTien <= end && c.ThanhTien >= start).ToList();
+            List<ResponseList<DataResponseHoaDon>> responseObjects = new List<ResponseList<DataResponseHoaDon>>();
+            foreach (var item in list)
+            {
+                var responseObject = _responseList.ResponseSuccses(_hdConverter.EntityToDTO(item));
+                responseObjects.Add(responseObject);
+            }
+            return responseObjects;
+        }
+
+        public List<ResponseList<DataResponseHoaDon>> TimHoaDonTheoMaHoacten(string text)
+        {
+            List<HoaDon> list = _context.hoaDons.Where(c => c.TenHoaDon == text ||  c.MaGiaoDich == text).ToList();
+            List<ResponseList<DataResponseHoaDon>> responseObjects = new List<ResponseList<DataResponseHoaDon>>();
+            foreach (var item in list)
+            {
+                var responseObject = _responseList.ResponseSuccses(_hdConverter.EntityToDTO(item));
+                responseObjects.Add(responseObject);
+            }
+            return responseObjects;
         }
     }
 }

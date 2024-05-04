@@ -30,5 +30,41 @@ namespace HoaDon_Api.Controllers
         {
             return Ok(_hoaDonService.XoaHoaDon(HoaDonId));
         }
+
+        // Loc du lieu
+        [HttpGet]
+        public IActionResult DSHoaDon()
+        {
+            var dsHd = _hoaDonService.LayHoaDon().OrderByDescending(c => c.Data.ThoiGianTao);
+            return Ok(dsHd);
+        }
+        [HttpGet("dshdnamthang")]
+        public IActionResult DSHoaDonTheoNamThang(int year,int month)
+        {
+            var dsHd = _hoaDonService.LayHoaDonTheoNamThang(year,month);
+            return Ok(dsHd);
+        }
+
+        [HttpGet("dshdngay")]
+        public IActionResult DSHoaDonTheoNgay(DateTime startDate, DateTime enddate)
+        {
+            var dsHd = _hoaDonService.LayHoaDonTheoNgay(startDate, enddate);
+            return Ok(dsHd);
+        }
+
+        [HttpGet("dshdTien")]
+        public IActionResult DSHoaDonTheoTien(double start, double end)
+        {
+            var dsHd = _hoaDonService.LayHoaDonTheoTien(start, end);
+            return Ok(dsHd);
+        }
+
+        [HttpGet("layHDtheoTenHoacMGD")]
+        public IActionResult HoaDonbyTenOrMGD(string text)
+        {
+            
+            return Ok(_hoaDonService.TimHoaDonTheoMaHoacten(text));
+        }
+
     }
 }
