@@ -13,19 +13,19 @@ namespace HoaDon_Api.Services.Interfaces
 
 
         // LOC DU LIEU 
-        public List<ResponseList<DataResponseHoaDon>> LayHoaDon();
+        public List<ResponseList<DataResponseHoaDon>> LayHoaDon(int page = 1);
 
-        public List<ResponseList<DataResponseHoaDon>> LayHoaDonTheoNamThang(int year, int month);
+        public List<ResponseList<DataResponseHoaDon>> LayHoaDonTheoNamThang(int year, int month, int page);
 
         //Lấy hóa đơn được tạo từ ngày ... đến ngày
-        public List<ResponseList<DataResponseHoaDon>> LayHoaDonTheoNgay(DateTime Ngaydau, DateTime ngaykt);
+        public List<ResponseList<DataResponseHoaDon>> LayHoaDonTheoNgay(DateTime Ngaydau, DateTime ngaykt, int page);
 
         // Lấy hóa đơn theo tổng tiền từ XXXX -> XXXX
-        public List<ResponseList<DataResponseHoaDon>> LayHoaDonTheoTien(double start, double end);
+        public List<ResponseList<DataResponseHoaDon>> LayHoaDonTheoTien(double start, double end, int page);
 
         //Tìm kiếm hóa đơn theo Mã giao dịch hoặc tên hóa đơn
 
-        public List<ResponseList<DataResponseHoaDon>> TimHoaDonTheoMaHoacten(string text);
+        public List<ResponseList<DataResponseHoaDon>> TimHoaDonTheoMaHoacten(string text, int page);
 
     }
 }

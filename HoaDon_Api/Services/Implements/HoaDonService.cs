@@ -5,6 +5,7 @@ using HoaDon_Api.PayLoads.DataRequests;
 using HoaDon_Api.PayLoads.DataResponses;
 using HoaDon_Api.PayLoads.Responses;
 using HoaDon_Api.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections;
@@ -17,7 +18,7 @@ namespace HoaDon_Api.Services.Implements
         private readonly AppDbContext _context;
         private readonly ResponseObject<DataResponseHoaDon> _responseObject;
         private readonly ResponseList<DataResponseHoaDon> _responseList;
-
+        public static int page_size { get; set; } = 5;
         private readonly HoaDonConverter _hdConverter;
 
         public HoaDonService(ResponseObject<DataResponseHoaDon> responseObject, ResponseList<DataResponseHoaDon> responseList)
@@ -167,9 +168,10 @@ namespace HoaDon_Api.Services.Implements
 
 
         // Loc du lieu
-        public List<ResponseList<DataResponseHoaDon>> LayHoaDon()
+        public List<ResponseList<DataResponseHoaDon>> LayHoaDon(int page)
         {
-            List<HoaDon> list = _context.hoaDons.ToList();
+            page = (page <= 0) ? 1 : page;
+            var list = _context.hoaDons.AsQueryable().Skip((page-1)* page_size).Take(page_size);
             List<ResponseList<DataResponseHoaDon>> responseObjects = new List<ResponseList<DataResponseHoaDon>>();
             foreach (var item in list)
             {
@@ -179,9 +181,27 @@ namespace HoaDon_Api.Services.Implements
             return responseObjects;
         }
 
-        public List<ResponseList<DataResponseHoaDon>> LayHoaDonTheoNamThang(int year, int month)
+        public List<ResponseList<DataResponseHoaDon>> LayHoaDonTheoNamThang(int year, int month, int page)
         {
-            List<HoaDon> list = _context.hoaDons.Where(c=>c.ThoiGianTao.Year == year && c.ThoiGianTao.Month == month).ToList();
+            page = (page <= 0) ? 1 : page;
+            var list = _context.hoaDons.AsQueryable().Skip((page - 1) * page_size).Take(page_size);
+
+            if (year == 0 && month != 0)
+            {
+                list = list.Where(c => c.ThoiGianTao.Month == month);
+            }
+            if (month == 0 && year != 0)
+            {
+                list = list.Where(c => c.ThoiGianTao.Year == year);
+            }
+            if (year != 0 && month != 0)
+            {
+                list = list.Where(c => c.ThoiGianTao.Year == year && c.ThoiGianTao.Month == month);
+            }
+            if (year == 0 && month == 0)
+            {
+                list = list;
+            }
             List<ResponseList<DataResponseHoaDon>> responseObjects = new List<ResponseList<DataResponseHoaDon>>();
             foreach (var item in list)
             {
@@ -191,9 +211,26 @@ namespace HoaDon_Api.Services.Implements
             return responseObjects;
         }
 
-        public List<ResponseList<DataResponseHoaDon>> LayHoaDonTheoNgay(DateTime Ngaydau, DateTime ngaykt)
+        public List<ResponseList<DataResponseHoaDon>> LayHoaDonTheoNgay(DateTime Ngaydau, DateTime ngaykt, int page)
         {
-            List<HoaDon> list = _context.hoaDons.Where(c => c.ThoiGianTao <= ngaykt && c.ThoiGianTao >= Ngaydau).ToList();
+            page = (page <= 0) ? 1 : page;
+            var list = _context.hoaDons.AsQueryable().Skip((page - 1) * page_size).Take(page_size);
+            if (Ngaydau == DateTime.MinValue && ngaykt == DateTime.MinValue)
+            {
+                list = list;
+            }
+            if (Ngaydau > ngaykt)
+            {
+                list = null;
+            }
+            if (Ngaydau < ngaykt)
+            {
+                list = list.Where(c => c.ThoiGianTao.Date <= ngaykt.Date && c.ThoiGianTao.Date >= Ngaydau.Date);
+            }
+            if (Ngaydau == ngaykt)
+            {
+                list = list.Where(c => c.ThoiGianTao.Date == ngaykt.Date);
+            }
             List<ResponseList<DataResponseHoaDon>> responseObjects = new List<ResponseList<DataResponseHoaDon>>();
             foreach (var item in list)
             {
@@ -203,9 +240,22 @@ namespace HoaDon_Api.Services.Implements
             return responseObjects;
         }
 
-        public List<ResponseList<DataResponseHoaDon>> LayHoaDonTheoTien(double start, double end)
+        public List<ResponseList<DataResponseHoaDon>> LayHoaDonTheoTien(double start, double end, int page)
         {
-            List<HoaDon> list = _context.hoaDons.Where(c => c.ThanhTien <= end && c.ThanhTien >= start).ToList();
+            page = (page <= 0) ? 1 : page;
+            var list = _context.hoaDons.AsQueryable().Skip((page - 1) * page_size).Take(page_size);
+            if (start > end)
+            {
+                list = null;
+            }
+            if (start == end)
+            {
+                list = list.Where(c => c.ThanhTien == end);
+            }
+            else
+            {
+                list = list.Where(c => c.ThanhTien >= start && c.ThanhTien < end);
+            }
             List<ResponseList<DataResponseHoaDon>> responseObjects = new List<ResponseList<DataResponseHoaDon>>();
             foreach (var item in list)
             {
@@ -215,9 +265,14 @@ namespace HoaDon_Api.Services.Implements
             return responseObjects;
         }
 
-        public List<ResponseList<DataResponseHoaDon>> TimHoaDonTheoMaHoacten(string text)
+        public List<ResponseList<DataResponseHoaDon>> TimHoaDonTheoMaHoacten(string text, int page)
         {
-            List<HoaDon> list = _context.hoaDons.Where(c => c.TenHoaDon == text ||  c.MaGiaoDich == text).ToList();
+            page = (page <= 0) ? 1 : page;
+            var list = _context.hoaDons.AsQueryable().Skip((page - 1) * page_size).Take(page_size);
+            if (!string.IsNullOrEmpty(text))
+            {
+                list = list.Where(c => c.TenHoaDon == text || c.MaGiaoDich == text);
+            }
             List<ResponseList<DataResponseHoaDon>> responseObjects = new List<ResponseList<DataResponseHoaDon>>();
             foreach (var item in list)
             {
